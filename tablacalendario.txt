@@ -1,0 +1,12 @@
+ConNombreMes = Table.AddColumn(ConMes, "NombreMes", each Date.ToText([Fecha], "MMMM", "es-ES"), type text),
+    ConDia = Table.AddColumn(ConNombreMes, "Día", each Date.Day([Fecha]), Int64.Type),
+    ConNombreDia = Table.AddColumn(ConDia, "NombreDia", each Date.ToText([Fecha], "dddd", "es-ES"), type text),
+    ConSemana = Table.AddColumn(ConNombreDia, "Semana", each Date.WeekOfYear([Fecha]), Int64.Type),
+    ConAñoMes = Table.AddColumn(ConSemana, "AñoMes", each Text.From([Año]) & "-" & Text.PadStart(Text.From([Mes]), 2, "0"), type text),
+    ConTrimestre = Table.AddColumn(ConAñoMes, "Trimestre", each Date.QuarterOfYear([Fecha]), Int64.Type),
+    ConAñoTrimestre = Table.AddColumn(ConTrimestre, "AñoTrimestre", each Text.From([Año]) & "-T" & Text.From([Trimestre]), type text),
+    EsInicioMes = Table.AddColumn(ConAñoTrimestre, "EsInicioMes", each [Día] = 1, type logical),
+    EsFinMes = Table.AddColumn(EsInicioMes, "EsFinMes", each Date.EndOfMonth([Fecha]) = [Fecha], type logical),
+    EsDiaLaboral = Table.AddColumn(EsFinMes, "EsDiaLaboral", each Date.DayOfWeek([Fecha], Day.Monday) < 5, type logical)
+in
+    EsDiaLaboral
